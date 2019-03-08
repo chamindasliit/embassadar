@@ -4,7 +4,7 @@ Modules let you enable and configure special behaviors for Ambassador, in ways t
 
 ## The `ambassador` Module
 
-If present, the `ambassador` module defines system-wide configuration. **You may very well not need this module.** The defaults in the `ambassador` module are:
+If present, the `ambassador` module defines system-wide configuration. **You may very well not need this module.** The defaults in the `ambassador` module are:
 
 ```yaml
 ---
@@ -81,10 +81,6 @@ config:
   #   methods: POST, GET, OPTIONS
   #   ...
   #   ...
-
-  # This enables gRPC-Web; a bridge to have Ambassador translate between
-  # the gRPC-Web protocol and a native gRPC upstream server.
-  # enable_grpc_web: true
 ```
 
 ### `enable_ivp4` and `enable_ipv6`

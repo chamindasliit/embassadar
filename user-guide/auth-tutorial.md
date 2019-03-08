@@ -8,6 +8,8 @@ This tutorial assumes you have already followed the [Ambassador Getting Started]
 
 After completing [Getting Started](/user-guide/getting-started), you'll have a Kubernetes cluster running Ambassador and the Quote of the Moment service. Let's walk through adding authentication to this setup.
 
+Don't want to DIY? [Ambassador Pro](/pro) integrates with popular Identity Providers such as Auth0 to provide a seamless OAuth / OpenID Connect authentication flow for your services. Start a [free 14-day trial](/pro/free-trial) now! 
+
 ## 1. Deploy the authentication service
 
 Ambassador delegates the actual authentication logic to a third party authentication service. We've written a [simple authentication service](https://github.com/datawire/ambassador-auth-service) that:
@@ -94,12 +96,14 @@ metadata:
   annotations:
     getambassador.io/config: |
       ---
-      apiVersion: ambassador/v0
+      apiVersion: ambassador/v1
       kind:  AuthService
       name:  authentication
       auth_service: "example-auth:3000"
       path_prefix: "/extauth"
-      allowed_headers:
+      allowed_request_headers:
+      - "x-qotm-session"
+      allowed_authorization_headers:
       - "x-qotm-session"
 spec:
   type: ClusterIP
@@ -195,3 +199,16 @@ TCP_NODELAY set
 ## More
 
 For more details about configuring authentication, read the documentation on [external authentication](/reference/services/auth-service).
+
+## Legacy v0 API
+If using Ambassador v0.40.2 or earlier, use the deprecated v0 `AuthService` API
+```yaml
+      ---
+      apiVersion: ambassador/v0
+      kind:  AuthService
+      name:  authentication
+      auth_service: "example-auth:3000"
+      path_prefix: "/extauth"
+      allowed_headers:
+      - "x-qotm-session"
+```

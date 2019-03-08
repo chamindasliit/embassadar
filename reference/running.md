@@ -30,7 +30,7 @@ spec:
         service: ambassador
     spec:
       containers:
-        image: quay.io/datawire/ambassador:0.35.0
+        image: quay.io/datawire/ambassador:0.50.0
         name: ambassador
      restartPolicy: Always
      securityContext:
@@ -110,7 +110,7 @@ metadata:
   annotations:
     getambassador.io/config: |
       ---
-      apiVersion: ambassador/v0
+      apiVersion: ambassador/v1
       kind:  Module
       name:  ambassador
       ambassador_id: ambassador-1
@@ -128,27 +128,27 @@ Ambassador will then only use YAML objects that include an appropriate `ambassad
 
 ```yaml
 ---
-apiVersion: ambassador/v0
+apiVersion: ambassador/v1
 kind:  Mapping
 name:  mapping_used_1
 ambassador_id: ambassador-1
 prefix: /demo1/
 service: demo1
 ---
-apiVersion: ambassador/v0
+apiVersion: ambassador/v1
 kind:  Mapping
 name:  mapping_used_2
 ambassador_id: [ "ambassador-1", "ambassador-2" ]
 prefix: /demo2/
 service: demo2
 ---
-apiVersion: ambassador/v0
+apiVersion: ambassador/v1
 kind:  Mapping
 name:  mapping_skipped_1
 prefix: /demo3/
 service: demo3
 ---
-apiVersion: ambassador/v0
+apiVersion: ambassador/v1
 kind:  Mapping
 name:  mapping_skipped_2
 ambassador_id: ambassador-2
@@ -185,6 +185,10 @@ If desired, Ambassador can be configured from YAML files in the directory `$AMBA
 Note well that while Ambassador will read its initial configuration from this directory, configuration loaded from Kubernetes annotations will _replace_ this initial configuration. If this is not what you want, you will need to set the environment variable `AMBASSADOR_NO_KUBEWATCH` so that Ambassador will not try to update its configuration from Kubernetes resources.
 
 Also note that the YAML files in the configuration directory must contain Ambassador resources, not Kubernetes resources with annotations.
+
+## Log levels and debugging
+
+Ambassador and Ambassador Pro support more verbose debugging levels. If using Ambassador, the [diagnostics](diagnostics) service has a button to enable debug logging. Be aware that if you're running Ambassador on multiple pods, the debug log levels are not enabled for all pods -- they are configured on a per-pod basis. If using Ambassador Pro, you can increase the log levels by setting the `APP_LOG_LEVEL` environment variable to `debug`.
 
 ## Ambassador Update Checks (Scout)
 
