@@ -108,7 +108,7 @@ ENVOY_FILE ?= envoy-bin/envoy-static-stripped
 
 
   # Increment BASE_ENVOY_RELVER on changes to `Dockerfile.base-envoy`, or Envoy recipes
-  BASE_ENVOY_RELVER ?= 2
+  BASE_ENVOY_RELVER ?= 3
   # Increment BASE_GO_RELVER on changes to `Dockerfile.base-go`
   BASE_GO_RELVER    ?= 15
   # Increment BASE_PY_RELVER on changes to `Dockerfile.base-py`, `releng/*`, `multi/requirements.txt`, `ambassador/requirements.txt`
@@ -327,7 +327,7 @@ envoy-bin:
 	mkdir -p $@
 envoy-bin/envoy-static: envoy-build-image.txt FORCE | envoy-bin
 	@PS4=; set -ex; if docker run --rm --entrypoint=true $(BASE_ENVOY_IMAGE); then \
-	    docker run --rm --volume=$(CURDIR)/$(@D):/xfer:rw --user=$$(id -u):$$(id -g) $(BASE_ENVOY_IMAGE) cp -a /usr/local/bin/envoy /xfer/$(@F); \
+	    docker run --rm --volume=$(CURDIR)/$(@D):/xfer:rw --user=$$(id -u):$$(id -g) $(BASE_ENVOY_IMAGE) rsync -Pav --delete /usr/local/bin/envoy /xfer/$(@F); \
 	else \
 	    if [ -n '$(CI)' ]; then \
 	        echo 'error: This should not happen in CI: should not try to compile Envoy'; \
@@ -342,7 +342,7 @@ envoy-bin/envoy-static: envoy-build-image.txt FORCE | envoy-bin
 	    docker run --rm --volume=envoy-build:/root:ro --volume=$(CURDIR)/envoy-bin:/xfer:rw --user=$$(id -u):$$(id -g) $$(cat envoy-build-image.txt) rsync -Pav --delete /root/envoy/bazel-bin/source/exe/envoy-static /xfer/envoy-static; \
 	fi
 %-stripped: % envoy-build-image.txt
-	docker run --rm --volume=$(abspath $(@D)):/xfer:rw $$(cat envoy-build-image.txt) strip /xfer/$(<F) -o /xfer/$(@F)
+	docker run --rm --volume=$(abspath $(@D)):/xfer:rw --user=$$(id -u):$$(id -g) $$(cat envoy-build-image.txt) strip /xfer/$(<F) -o /xfer/$(@F)
 
 check-envoy: envoy-bin/envoy-static envoy-build-image.txt
 	$(ENVOY_SYNC_HOST_TO_DOCKER)
