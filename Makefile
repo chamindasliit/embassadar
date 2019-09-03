@@ -327,6 +327,8 @@ envoy-bin:
 	mkdir -p $@
 envoy-bin/envoy-static: envoy-build-image.txt FORCE | envoy-bin
 	@PS4=; set -ex; if docker run --rm --entrypoint=true $(BASE_ENVOY_IMAGE); then \
+	    ls -ld $(@D) $@; \
+	    docker run --rm --volume=$(CURDIR)/$(@D):/xfer:rw --user=$$(id -u):$$(id -g) $(BASE_ENVOY_IMAGE) ls -ld /xfer /xfer/$(@F); \
 	    docker run --rm --volume=$(CURDIR)/$(@D):/xfer:rw --user=$$(id -u):$$(id -g) $(BASE_ENVOY_IMAGE) rsync -Pav --delete /usr/local/bin/envoy /xfer/$(@F); \
 	else \
 	    if [ -n '$(CI)' ]; then \
