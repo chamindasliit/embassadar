@@ -1,7 +1,7 @@
 OSS_HOME:=$(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 
 # We'll set REGISTRY_ERR in builder.mk
-docker.tag.dev = $(if $(DEV_REGISTRY),$(DEV_REGISTRY)/$*:$(patsubst sha256:%,%,$(shell cat $<)),$(REGISTRY_ERR))
+docker.tag.dev = $(if $(DEV_DOCKER_REPO),$(DEV_DOCKER_REPO):$(notdir $*)-$(shell tr : - < $<),$(REGISTRY_ERR))
 
 include $(OSS_HOME)/build-aux/prelude.mk
 include $(OSS_HOME)/build-aux/docker.mk
