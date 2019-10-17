@@ -64,6 +64,9 @@ images.base =
 images.all += $(patsubst docker/%/Dockerfile,%,$(wildcard docker/*/Dockerfile)) test-auth-tls
 images.cluster += $(filter test-%,$(images.all))
 images.base += $(filter base-%,$(images.all))
+# NB: images.all and images.cluster are used eagerly by
+# builder/builder.mk, so we must set them before we include
+# builder.mk.
 
 OSS_HOME := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 include $(OSS_HOME)/build-aux/prelude.mk
@@ -95,6 +98,7 @@ generate-clean: ## Delete generated sources that get committed to git (implies `
 generate-clean: clobber
 	rm -rf pkg/api
 .PHONY: generate generate-clean
+# NB: cxx/envoy.mk hooks in to 'generate' & 'generate-clean'
 
 base-%.docker.stamp: docker/base-%/Dockerfile $(var.)BASE_IMAGE.%
 	@PS4=; set -ex; { \
@@ -122,6 +126,7 @@ update-base: ## Run this whenever the base images (ex Envoy, ./docker/base-*/*) 
 	$(MAKE) $(addsuffix .docker.push.base,$(images.base))
 .PHONY: update-base
 
+# travis-script.sh needs to be able to know these variables
 export-vars:
 	@echo "export BASE_DOCKER_REPO='$(BASE_DOCKER_REPO)'"
 	@echo "export RELEASE_DOCKER_REPO='$(RELEASE_DOCKER_REPO)'"
