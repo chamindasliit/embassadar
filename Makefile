@@ -30,8 +30,6 @@ DEV_DOCKER_REPO     ?= $(DEV_REGISTRY)/dev
 
 DOCKER_OPTS ?=
 
-YES_I_AM_UPDATING_THE_BASE_IMAGES ?=
-
 docker.tag.dev        = $(DEV_DOCKER_REPO):$(notdir $*)-$(shell tr : - < $<)
 # By default, don't allow .release, .release-rc, .release-ea, or .base tags...
 docker.tag.release    = $(error The 'release' tag is only valid for the 'ambassador' image)
@@ -46,7 +44,6 @@ docker.tag.release    = $(RELEASE_DOCKER_REPO):$(RELEASE_VERSION)
 docker.tag.release-rc = $(RELEASE_DOCKER_REPO):$(RELEASE_VERSION) $(RELEASE_REPO):$(BUILD_VERSION)-latest-rc
 #ambassador.docker.tag.release:
 docker.tag.release-ea = $(RELEASE_DOCKER_REPO):$(RELEASE_VERSION)
-BASE_IMAGE.envoy = $(BASE_DOCKER_REPO):envoy-$(BASE_VERSION.envoy)
 #envoy-base.docker.tag.base:
 docker.tag.base       = $(BASE_IMAGE.envoy)
 
@@ -58,8 +55,6 @@ images.all =
 # The subset of $(images.all) that we will deploy to the
 # DEV_KUBECONFIG cluster.
 images.cluster =
-# The subset of $(images.all) that `make update-base` should update.
-images.base =
 
 images.all += $(patsubst docker/%/Dockerfile,%,$(wildcard docker/*/Dockerfile)) test-auth-tls
 images.cluster += $(filter test-%,$(images.all))
@@ -100,31 +95,10 @@ generate-clean: clobber
 .PHONY: generate generate-clean
 # NB: cxx/envoy.mk hooks in to 'generate' & 'generate-clean'
 
-base-%.docker.stamp: docker/base-%/Dockerfile $(var.)BASE_IMAGE.%
-	@PS4=; set -ex; { \
-	    if ! docker run --rm --entrypoint=true $(BASE_IMAGE.$*); then \
-	        if [ -z '$(YES_I_AM_UPDATING_THE_BASE_IMAGES)' ]; then \
-	            { set +x; } &>/dev/null; \
-	            echo 'error: failed to pull $(BASE_IMAGE.$*), but $$YES_I_AM_UPDATING_THE_BASE_IMAGES is not set'; \
-	            echo '       If you are trying to update the base images, then set that variable to a non-empty value.'; \
-	            echo '       If you are not trying to update the base images, then check your network connection and Docker credentials.'; \
-	            exit 1; \
-	        fi; \
-	        docker build $(DOCKER_OPTS) $($@.DOCKER_OPTS) -t $(BASE_IMAGE.$*) -f $< $(or $($@.DOCKER_DIR),.); \
-	    fi; \
-	}
-	docker image inspect $(BASE_IMAGE.$*) --format='{{.Id}}' > $@
-
 test-%.docker.stamp: docker/test-%/Dockerfile FORCE
 	docker build --quiet --iidfile=$@ $(<D)
 test-auth-tls.docker.stamp: docker/test-auth/Dockerfile FORCE
 	docker build --quiet --build-arg TLS=--tls --iidfile=$@ $(<D)
-
-update-base: ## Run this whenever the base images (ex Envoy, ./docker/base-*/*) change
-	$(MAKE) $(addsuffix .docker.tag.base,$(images.base))
-	$(MAKE) generate
-	$(MAKE) $(addsuffix .docker.push.base,$(images.base))
-.PHONY: update-base
 
 # travis-script.sh needs to be able to know these variables
 export-vars:

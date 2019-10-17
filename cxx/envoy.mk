@@ -1,37 +1,85 @@
+# envoy.mk - rules for building Envoy for Ambassador
+#
+## Lazy inputs ##
+#  - Variable: IS_PRIVATE
+#  - Variable: BASE_DOCKER_REPO
+#  - Envirionment variable: YES_I_AM_OK_WITH_COMPILING_ENVOY ?=
+## Outputs ##
+#  "happens every time"
+#  - Target        : base-envoy.docker.stamp
+#  "actually updating Envoy"
+#  - .PHONY target : update-envoy
+#  - .PHONY target : check-envoy
+#  - .PHONY target : envoy-shell
+#  - Target        : cxx/envoy-build-image.txt      # clean
+#  - Target        : cxx/envoy-build-container.txt  # clean
+#  - Target        : cxx/envoy/                     # clobber
+#  - Target        : bin_linux_amd64/envoy-static   # clobber
+#  - Target        : api/envoy/                     # generate-clean
+#  - Target        : pkg/api/envoy/                 # generate-clean
+## builder.mk targets ##
+#  - clean
+#  - clobber
+#  - generate-clean
+#  - generate
+#
+# How this works:
+#
+#   Depend on `base-envoy.docker` and `cat` it to get the Envoy base
+#   image that you can copy `/usr/local/bin/envoy` from.  "Normally",
+#   that will just download it from a cache, ... but if it can't
+#   download it from the cache (because you've asked for an Envoy
+#   version that doesn't exist in the cache), then it will call
+#   $(MAKE) to build the binary, then call `docker build` to bundle it
+#   up in to the base image.
+#
+# If you are updating Envoy, you will also need to re-generate the
+# protobuf stuff from it; use `make update-envoy` to (1) build the
+# base image, (2) update the generated code, and then (3) push the
+# base image.
+#
+# It will refuse to compile envoy unless
+# ${YES_I_AM_OK_WITH_COMPILING_ENVOY} is set, to avoid accidental
+# compilation.
+
 srcdir := $(patsubst %/,%,$(dir $(lastword $(MAKEFILE_LIST))))
 topsrcdir := $(patsubst %/,%,$(dir $(firstword $(MAKEFILE_LIST))))
 
-YES_I_AM_OK_WITH_COMPILING_ENVOY ?=
-ENVOY_FILE ?= $(topsrcdir)/bin_linux_amd64/envoy-static-stripped
+update-envoy: ## Run this whenever you update Envoy
+	$(MAKE) base-envoy.docker.tag.base
+	$(MAKE) generate-clean
+	$(MAKE) generate
+	$(MAKE) base-envoy.docker.tag.base
+.PHONY: update-envoy
 
-# IF YOU MESS WITH ANY OF THESE VALUES, YOU MUST RUN `make update-base`.
+#
+# The normal "happens every time" part
+
+# IF YOU MESS WITH ANY OF THESE VALUES, YOU MUST RUN `make update-envoy`.
   ENVOY_REPO ?= $(if $(IS_PRIVATE),git@github.com:datawire/envoy-private.git,git://github.com/datawire/envoy.git)
   ENVOY_COMMIT ?= 6e6ae35f214b040f76666d86b30a6ad3ceb67046
   ENVOY_COMPILATION_MODE ?= opt
-
   # Increment BASE_ENVOY_RELVER on changes to `docker/base-envoy/Dockerfile`, or Envoy recipes
   BASE_ENVOY_RELVER ?= 6
-
   BASE_VERSION.envoy ?= $(BASE_ENVOY_RELVER).$(ENVOY_COMMIT).$(ENVOY_COMPILATION_MODE)
+  BASE_IMAGE.envoy = $(BASE_DOCKER_REPO):envoy-$(BASE_VERSION.envoy)
 # END LIST OF VARIABLES REQUIRING `make update-base`.
 
-#
-# Envoy build
-
-$(srcdir)/envoy: FORCE
-	@echo "Getting Envoy sources..."
-# Migrate from old layouts
-	@set -e; { \
-	    if ! test -d $@; then \
-	        if test -d $(topsrcdir)/envoy; then \
-	            set -x; \
-	            mv $(topsrcdir)/envoy $@; \
-	        elif test -d $(topsrcdir)/envoy-src; then \
-	            set -x; \
-	            mv $(topsrcdir)/envoy-src $@; \
-	        fi; \
+base-envoy.docker.stamp: base-%.docker.stamp: docker/base-%/Dockerfile $(var.)BASE_IMAGE.%
+	@PS4=; set -ex; { \
+	    if ! docker run --rm --entrypoint=true $(BASE_IMAGE.$*); then \
+	        $(MAKE) $(topsrcdir)/bin_linux_amd64/envoy-static $(srcdir)/envoy-build-image.txt; \
+	        docker build --build-arg=ENVOY_BUILD_IMAGE=$$(cat $(srcdir)/envoy-build-image.txt) -t $(BASE_IMAGE.$*) -f $< $(topsrcdir)/bin_linux_amd64; \
 	    fi; \
 	}
+	docker image inspect $(BASE_IMAGE.$*) --format='{{.Id}}' > $@
+
+#
+# The "actually compile Envoy" part
+
+YES_I_AM_OK_WITH_COMPILING_ENVOY ?=
+
+$(srcdir)/envoy: FORCE
 # Ensure that GIT_DIR and GIT_WORK_TREE are unset so that `git bisect`
 # and friends work properly.
 	@PS4=; set -ex; { \
@@ -100,13 +148,6 @@ $(topsrcdir)/bin_linux_amd64/envoy-static: $(ENVOY_BASH.deps) FORCE
 	    if docker run --rm --entrypoint=true $(BASE_IMAGE.envoy); then \
 	        rsync -Pav --blocking-io -e 'docker run --rm -i' $$(docker image inspect $(BASE_IMAGE.envoy) --format='{{.Id}}' | sed 's/^sha256://'):/usr/local/bin/envoy $@; \
 	    else \
-	        if [ -z '$(YES_I_AM_UPDATING_THE_BASE_IMAGES)' ]; then \
-	            { set +x; } &>/dev/null; \
-	            echo 'error: failed to pull $(BASE_IMAGE.envoy), but $$YES_I_AM_UPDATING_THE_BASE_IMAGES is not set'; \
-	            echo '       If you are trying to update the base images, then set that variable to a non-empty value.'; \
-	            echo '       If you are not trying to update the base images, then check your network connection and Docker credentials.'; \
-	            exit 1; \
-	        fi; \
 	        if [ -z '$(YES_I_AM_OK_WITH_COMPILING_ENVOY)' ]; then \
 	            { set +x; } &>/dev/null; \
 	            echo 'error: Envoy compilation triggered, but $$YES_I_AM_OK_WITH_COMPILING_ENVOY is not set'; \
@@ -117,12 +158,6 @@ $(topsrcdir)/bin_linux_amd64/envoy-static: $(ENVOY_BASH.deps) FORCE
 	            rsync -Pav --blocking-io -e 'docker exec -i' $$(cat $(srcdir)/envoy-build-container.txt):/root/envoy/bazel-bin/source/exe/envoy-static $@; \
 	        ); \
 	    fi; \
-	}
-%-stripped: % $(srcdir)/envoy-build-container.txt
-	@PS4=; set -ex; { \
-	    rsync -Pav --blocking-io -e 'docker exec -i' $< $$(cat $(srcdir)/envoy-build-container.txt):/tmp/$(<F); \
-	    docker exec $$(cat $(srcdir)/envoy-build-container.txt) strip /tmp/$(<F) -o /tmp/$(@F); \
-	    rsync -Pav --blocking-io -e 'docker exec -i' $$(cat $(srcdir)/envoy-build-container.txt):/tmp/$(@F) $@; \
 	}
 
 check-envoy: ## Run the Envoy test suite
@@ -139,12 +174,8 @@ envoy-shell: $(ENVOY_BASH.deps)
 	)
 .PHONY: envoy-shell
 
-base-envoy.docker.stamp: $(srcdir)/envoy-build-image.txt $(topsrcdir)/bin_linux_amd64/envoy-static
-base-envoy.docker.stamp.DOCKER_OPTS = --build-arg=ENVOY_BUILD_IMAGE=$$(cat $(srcdir)/envoy-build-image.txt)
-base-envoy.docker.stamp.DOCKER_DIR = $(topsrcdir)/bin_linux_amd64
-
 #
-# Envoy generate
+# Code generation
 
 generate: pkg/api/envoy
 generate: api/envoy
