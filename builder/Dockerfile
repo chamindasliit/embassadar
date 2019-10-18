@@ -34,7 +34,6 @@ ARG envoy
 ########################################
 
 FROM ${envoy} as envoy
-RUN strip /usr/local/bin/envoy
 
 FROM ${base} as builder
 
@@ -55,8 +54,6 @@ RUN apk --no-cache add bash curl jq rsync python3 python3-dev build-base libffi-
 
 RUN chmod u+s $(which docker)
 
-COPY --from=envoy /usr/local/bin/envoy /usr/local/bin/envoy
-
 ENV KUBECONFIG=/buildroot/kubeconfig.yaml
 
 # Download, build, and install PyYAML.
@@ -70,6 +67,8 @@ RUN mkdir /tmp/pyyaml && \
 # Then we can do the rest of the Python stuff.
 COPY requirements.txt .
 RUN pip install -r requirements.txt
+
+COPY --from=envoy /usr/local/bin/envoy-stripped /usr/local/bin/envoy
 
 # XXX: this will go away
 RUN mkdir /ambassador && \

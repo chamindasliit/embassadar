@@ -60,7 +60,7 @@ update-envoy: ## Run this whenever you update Envoy
   ENVOY_COMMIT ?= 6e6ae35f214b040f76666d86b30a6ad3ceb67046
   ENVOY_COMPILATION_MODE ?= opt
   # Increment BASE_ENVOY_RELVER on changes to `docker/base-envoy/Dockerfile`, or Envoy recipes
-  BASE_ENVOY_RELVER ?= 6
+  BASE_ENVOY_RELVER ?= 7
   BASE_VERSION.envoy ?= $(BASE_ENVOY_RELVER).$(ENVOY_COMMIT).$(ENVOY_COMPILATION_MODE)
   BASE_IMAGE.envoy = $(BASE_DOCKER_REPO):envoy-$(BASE_VERSION.envoy)
 # END LIST OF VARIABLES REQUIRING `make update-base`.

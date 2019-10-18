@@ -21,3 +21,4 @@ ARG ENVOY_BUILD_IMAGE
 FROM $ENVOY_BUILD_IMAGE
 
 ADD ./envoy-static /usr/local/bin/envoy
+RUN strip /usr/local/bin/envoy -o /usr/local/bin/envoy-stripped
