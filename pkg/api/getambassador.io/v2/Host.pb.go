@@ -24,6 +24,170 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
+type HostTLSCertificateSource int32
+
+const (
+	HostTLSCertificateSource_Unknown HostTLSCertificateSource = 0
+	HostTLSCertificateSource_None    HostTLSCertificateSource = 1
+	HostTLSCertificateSource_Other   HostTLSCertificateSource = 2
+	HostTLSCertificateSource_ACME    HostTLSCertificateSource = 3
+)
+
+var HostTLSCertificateSource_name = map[int32]string{
+	0: "Unknown",
+	1: "None",
+	2: "Other",
+	3: "ACME",
+}
+
+var HostTLSCertificateSource_value = map[string]int32{
+	"Unknown": 0,
+	"None":    1,
+	"Other":   2,
+	"ACME":    3,
+}
+
+func (x HostTLSCertificateSource) String() string {
+	return proto.EnumName(HostTLSCertificateSource_name, int32(x))
+}
+
+func (HostTLSCertificateSource) EnumDescriptor() ([]byte, []int) {
+	return fileDescriptor_88d8e6496365725b, []int{0}
+}
+
+type HostState int32
+
+const (
+	HostState_Pending HostState = 0
+	HostState_Ready   HostState = 1
+	HostState_Error   HostState = 2
+)
+
+var HostState_name = map[int32]string{
+	0: "Pending",
+	1: "Ready",
+	2: "Error",
+}
+
+var HostState_value = map[string]int32{
+	"Pending": 0,
+	"Ready":   1,
+	"Error":   2,
+}
+
+func (x HostState) String() string {
+	return proto.EnumName(HostState_name, int32(x))
+}
+
+func (HostState) EnumDescriptor() ([]byte, []int) {
+	return fileDescriptor_88d8e6496365725b, []int{1}
+}
+
+type HostPhase int32
+
+const (
+	HostPhase_NA                        HostPhase = 0
+	HostPhase_DefaultsFilled            HostPhase = 1
+	HostPhase_ACMEUserPrivateKeyCreated HostPhase = 2
+	HostPhase_ACMEUserRegistered        HostPhase = 3
+	HostPhase_ACMECertificateChallenge  HostPhase = 4
+)
+
+var HostPhase_name = map[int32]string{
+	0: "NA",
+	1: "DefaultsFilled",
+	2: "ACMEUserPrivateKeyCreated",
+	3: "ACMEUserRegistered",
+	4: "ACMECertificateChallenge",
+}
+
+var HostPhase_value = map[string]int32{
+	"NA":                        0,
+	"DefaultsFilled":            1,
+	"ACMEUserPrivateKeyCreated": 2,
+	"ACMEUserRegistered":        3,
+	"ACMECertificateChallenge":  4,
+}
+
+func (x HostPhase) String() string {
+	return proto.EnumName(HostPhase_name, int32(x))
+}
+
+func (HostPhase) EnumDescriptor() ([]byte, []int) {
+	return fileDescriptor_88d8e6496365725b, []int{2}
+}
+
+type Host struct {
+	// Standard object's metadata.
+	// More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata
+	Metadata *v1.ObjectMeta `protobuf:"bytes,1,opt,name=metadata,proto3" json:"metadata,omitempty"`
+	// Specification of the desired behavior of the Host.
+	// More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#spec-and-status
+	Spec *HostSpec `protobuf:"bytes,2,opt,name=spec,proto3" json:"spec,omitempty"`
+	// Most recently observed status of the Host.
+	// This data may not be up to date.
+	// Populated by AES.
+	// More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#spec-and-status
+	Status               *HostStatus `protobuf:"bytes,3,opt,name=status,proto3" json:"status,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}    `json:"-"`
+	XXX_unrecognized     []byte      `json:"-"`
+	XXX_sizecache        int32       `json:"-"`
+}
+
+func (m *Host) Reset()         { *m = Host{} }
+func (m *Host) String() string { return proto.CompactTextString(m) }
+func (*Host) ProtoMessage()    {}
+func (*Host) Descriptor() ([]byte, []int) {
+	return fileDescriptor_88d8e6496365725b, []int{0}
+}
+func (m *Host) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *Host) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_Host.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *Host) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Host.Merge(m, src)
+}
+func (m *Host) XXX_Size() int {
+	return m.Size()
+}
+func (m *Host) XXX_DiscardUnknown() {
+	xxx_messageInfo_Host.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_Host proto.InternalMessageInfo
+
+func (m *Host) GetMetadata() *v1.ObjectMeta {
+	if m != nil {
+		return m.Metadata
+	}
+	return nil
+}
+
+func (m *Host) GetSpec() *HostSpec {
+	if m != nil {
+		return m.Spec
+	}
+	return nil
+}
+
+func (m *Host) GetStatus() *HostStatus {
+	if m != nil {
+		return m.Status
+	}
+	return nil
+}
+
 // The Host resource will usually be a Kubernetes CRD, but it could
 // appear in other forms. The HostSpec is the part of the Host resource
 // that doesn't change, no matter what form it's in -- when it's a CRD,
@@ -52,7 +216,7 @@ func (m *HostSpec) Reset()         { *m = HostSpec{} }
 func (m *HostSpec) String() string { return proto.CompactTextString(m) }
 func (*HostSpec) ProtoMessage()    {}
 func (*HostSpec) Descriptor() ([]byte, []int) {
-	return fileDescriptor_88d8e6496365725b, []int{0}
+	return fileDescriptor_88d8e6496365725b, []int{1}
 }
 func (m *HostSpec) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -123,6 +287,88 @@ func (m *HostSpec) GetTlsSecret() *v11.LocalObjectReference {
 	return nil
 }
 
+type HostStatus struct {
+	TlsCertificateSource HostTLSCertificateSource `protobuf:"varint,1,opt,name=tlsCertificateSource,proto3,enum=HostTLSCertificateSource" json:"tlsCertificateSource,omitempty"`
+	State                HostState                `protobuf:"varint,2,opt,name=state,proto3,enum=HostState" json:"state,omitempty"`
+	// phaseCompleted and phasePending are valid when state==Pending or
+	// state==Error.
+	PhaseCompleted HostPhase `protobuf:"varint,3,opt,name=phaseCompleted,proto3,enum=HostPhase" json:"phaseCompleted,omitempty"`
+	PhasePending   HostPhase `protobuf:"varint,4,opt,name=phasePending,proto3,enum=HostPhase" json:"phasePending,omitempty"`
+	// reason is valid when state==Error
+	Reason               string   `protobuf:"bytes,5,opt,name=reason,proto3" json:"reason,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *HostStatus) Reset()         { *m = HostStatus{} }
+func (m *HostStatus) String() string { return proto.CompactTextString(m) }
+func (*HostStatus) ProtoMessage()    {}
+func (*HostStatus) Descriptor() ([]byte, []int) {
+	return fileDescriptor_88d8e6496365725b, []int{2}
+}
+func (m *HostStatus) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *HostStatus) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_HostStatus.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *HostStatus) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_HostStatus.Merge(m, src)
+}
+func (m *HostStatus) XXX_Size() int {
+	return m.Size()
+}
+func (m *HostStatus) XXX_DiscardUnknown() {
+	xxx_messageInfo_HostStatus.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_HostStatus proto.InternalMessageInfo
+
+func (m *HostStatus) GetTlsCertificateSource() HostTLSCertificateSource {
+	if m != nil {
+		return m.TlsCertificateSource
+	}
+	return HostTLSCertificateSource_Unknown
+}
+
+func (m *HostStatus) GetState() HostState {
+	if m != nil {
+		return m.State
+	}
+	return HostState_Pending
+}
+
+func (m *HostStatus) GetPhaseCompleted() HostPhase {
+	if m != nil {
+		return m.PhaseCompleted
+	}
+	return HostPhase_NA
+}
+
+func (m *HostStatus) GetPhasePending() HostPhase {
+	if m != nil {
+		return m.PhasePending
+	}
+	return HostPhase_NA
+}
+
+func (m *HostStatus) GetReason() string {
+	if m != nil {
+		return m.Reason
+	}
+	return ""
+}
+
 type ACMEProviderSpec struct {
 	// Specifies who to talk ACME with to get certs. Defaults to Let's
 	// Encrypt; if "none", do not try to do TLS for this Host.
@@ -140,7 +386,7 @@ func (m *ACMEProviderSpec) Reset()         { *m = ACMEProviderSpec{} }
 func (m *ACMEProviderSpec) String() string { return proto.CompactTextString(m) }
 func (*ACMEProviderSpec) ProtoMessage()    {}
 func (*ACMEProviderSpec) Descriptor() ([]byte, []int) {
-	return fileDescriptor_88d8e6496365725b, []int{1}
+	return fileDescriptor_88d8e6496365725b, []int{3}
 }
 func (m *ACMEProviderSpec) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -198,38 +444,125 @@ func (m *ACMEProviderSpec) GetRegistration() string {
 }
 
 func init() {
+	proto.RegisterEnum("HostTLSCertificateSource", HostTLSCertificateSource_name, HostTLSCertificateSource_value)
+	proto.RegisterEnum("HostState", HostState_name, HostState_value)
+	proto.RegisterEnum("HostPhase", HostPhase_name, HostPhase_value)
+	proto.RegisterType((*Host)(nil), "Host")
 	proto.RegisterType((*HostSpec)(nil), "HostSpec")
+	proto.RegisterType((*HostStatus)(nil), "HostStatus")
 	proto.RegisterType((*ACMEProviderSpec)(nil), "ACMEProviderSpec")
 }
 
 func init() { proto.RegisterFile("Host.proto", fileDescriptor_88d8e6496365725b) }
 
 var fileDescriptor_88d8e6496365725b = []byte{
-	// 381 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x94, 0x92, 0x4d, 0x8b, 0xd3, 0x40,
-	0x18, 0xc7, 0x99, 0xbe, 0xd1, 0x8c, 0x11, 0xea, 0xe0, 0x21, 0x14, 0x09, 0x21, 0x5e, 0x72, 0x9a,
-	0x50, 0xab, 0xe0, 0x55, 0x45, 0x51, 0x54, 0x2a, 0x53, 0xef, 0x32, 0x99, 0x3c, 0xa6, 0x63, 0x93,
-	0x4c, 0x98, 0x19, 0x03, 0xfd, 0x6c, 0x7b, 0xd9, 0xe3, 0x1e, 0xf7, 0x23, 0x2c, 0xfd, 0x24, 0x4b,
-	0xd2, 0x6c, 0xd3, 0xee, 0xee, 0x65, 0x8f, 0xf3, 0xe3, 0xf9, 0xbf, 0x3c, 0x4f, 0x82, 0xf1, 0x57,
-	0x65, 0x2c, 0xad, 0xb4, 0xb2, 0x6a, 0xfe, 0x76, 0xfb, 0xde, 0x50, 0xa9, 0x62, 0x5e, 0xc9, 0x82,
-	0x8b, 0x8d, 0x2c, 0x41, 0xef, 0xe2, 0x6a, 0x9b, 0x35, 0xc0, 0xc4, 0x05, 0x58, 0x1e, 0xd7, 0x8b,
-	0x38, 0x83, 0x12, 0x34, 0xb7, 0x90, 0x76, 0xaa, 0xb0, 0x57, 0xc5, 0x42, 0x69, 0x78, 0x64, 0x26,
-	0xbc, 0x18, 0xe0, 0x69, 0x13, 0xb4, 0xae, 0x40, 0x90, 0xd7, 0xf8, 0x39, 0x2f, 0x12, 0x6e, 0x0c,
-	0x4f, 0x95, 0xfe, 0x23, 0x53, 0x0f, 0x05, 0xc3, 0xc8, 0x61, 0x6e, 0x0f, 0xbf, 0xa5, 0xc4, 0xc7,
-	0xb8, 0x33, 0x91, 0xaa, 0xf4, 0x06, 0x01, 0x8a, 0xc6, 0xec, 0x84, 0x90, 0x39, 0x9e, 0x6e, 0x94,
-	0xb1, 0x25, 0x2f, 0xc0, 0x1b, 0x06, 0x28, 0x72, 0xd8, 0xf1, 0x4d, 0x56, 0x78, 0x6a, 0x20, 0x07,
-	0x61, 0x95, 0xf6, 0x46, 0x01, 0x8a, 0x9e, 0xbd, 0x59, 0xd2, 0x43, 0x49, 0x7a, 0xba, 0x1a, 0xad,
-	0xb6, 0x59, 0x03, 0x0c, 0x6d, 0x56, 0xa3, 0xf5, 0x82, 0xfe, 0xe0, 0x09, 0xe4, 0xeb, 0x4e, 0xca,
-	0x8e, 0x26, 0xe4, 0x1d, 0x76, 0xb9, 0x28, 0xe0, 0x97, 0x56, 0xb5, 0x4c, 0x41, 0x7b, 0xe3, 0xd6,
-	0xf4, 0x05, 0xfd, 0xf0, 0xe9, 0xe7, 0xe7, 0x3b, 0xd8, 0xac, 0xc6, 0xce, 0xc6, 0xc8, 0x17, 0xec,
-	0xd8, 0xdc, 0xac, 0x41, 0x68, 0xb0, 0xde, 0xa4, 0xd5, 0x44, 0x27, 0x45, 0x68, 0x73, 0xad, 0x36,
-	0x56, 0x09, 0x9e, 0xaf, 0x92, 0x7f, 0x20, 0x2c, 0x83, 0xbf, 0xa0, 0xa1, 0x14, 0xc0, 0x7a, 0x69,
-	0x78, 0x89, 0xf0, 0xec, 0x7e, 0x14, 0x79, 0x85, 0x1d, 0xfe, 0xdf, 0x6e, 0x94, 0x96, 0x76, 0xe7,
-	0xa1, 0xf6, 0x02, 0x3d, 0x20, 0x2f, 0xf1, 0x18, 0x0a, 0x2e, 0xf3, 0xf6, 0x72, 0x0e, 0x3b, 0x3c,
-	0xc8, 0x6f, 0x3c, 0xab, 0xb4, 0xac, 0xb9, 0x85, 0xef, 0xb0, 0xeb, 0x7a, 0x0d, 0x9f, 0xd8, 0xeb,
-	0x81, 0x03, 0x09, 0xb1, 0xab, 0x21, 0x93, 0xc6, 0x76, 0x1f, 0x6b, 0xd4, 0x46, 0x9e, 0xb1, 0x8f,
-	0xee, 0xd5, 0xde, 0x47, 0xd7, 0x7b, 0x1f, 0xdd, 0xec, 0x7d, 0x94, 0x4c, 0xda, 0xbf, 0x62, 0x79,
-	0x1b, 0x00, 0x00, 0xff, 0xff, 0x08, 0xcf, 0xe4, 0x99, 0x7d, 0x02, 0x00, 0x00,
+	// 680 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x94, 0x54, 0x4d, 0x4f, 0x1b, 0x3b,
+	0x14, 0x65, 0xf2, 0xf5, 0x32, 0x97, 0xbc, 0x68, 0x9e, 0x85, 0xd0, 0x80, 0x20, 0x42, 0x61, 0x83,
+	0x58, 0x4c, 0x1e, 0xe1, 0x3d, 0xa9, 0x5b, 0x9a, 0x82, 0x5a, 0x95, 0x8f, 0xc8, 0x81, 0x75, 0xe5,
+	0xcc, 0x5c, 0x12, 0x37, 0x93, 0xf1, 0xc8, 0x76, 0x52, 0x45, 0xea, 0x0f, 0xe9, 0x7f, 0xe9, 0xa6,
+	0xcb, 0x2e, 0xfb, 0x13, 0x2a, 0xfe, 0x45, 0x77, 0x95, 0x3d, 0x93, 0x2f, 0xa0, 0x52, 0xbb, 0xf4,
+	0xb9, 0xe7, 0xdc, 0xeb, 0x7b, 0x8e, 0x65, 0x80, 0xd7, 0x42, 0xe9, 0x20, 0x95, 0x42, 0x8b, 0xdd,
+	0xff, 0x46, 0x2f, 0x54, 0xc0, 0x45, 0x8b, 0xa5, 0x7c, 0xcc, 0xc2, 0x21, 0x4f, 0x50, 0xce, 0x5a,
+	0xe9, 0x68, 0x60, 0x00, 0xd5, 0x1a, 0xa3, 0x66, 0xad, 0xe9, 0x49, 0x6b, 0x80, 0x09, 0x4a, 0xa6,
+	0x31, 0xca, 0x55, 0xcd, 0xa5, 0xaa, 0x15, 0x0a, 0x89, 0xcf, 0x70, 0x9a, 0x9f, 0x1c, 0x28, 0x99,
+	0x41, 0xe4, 0x12, 0xaa, 0xa6, 0x4f, 0xc4, 0x34, 0xf3, 0x9d, 0x03, 0xe7, 0x68, 0xb3, 0xfd, 0x6f,
+	0x90, 0xe9, 0x83, 0xd5, 0xa9, 0x41, 0x3a, 0x1a, 0x18, 0x40, 0x05, 0x86, 0x1d, 0x4c, 0x4f, 0x82,
+	0x9b, 0xfe, 0x7b, 0x0c, 0xf5, 0x15, 0x6a, 0x46, 0x17, 0x1d, 0xc8, 0x3e, 0x94, 0x54, 0x8a, 0xa1,
+	0x5f, 0xb0, 0x9d, 0xdc, 0xc0, 0x8c, 0xe8, 0xa5, 0x18, 0x52, 0x0b, 0x93, 0x43, 0xa8, 0x28, 0xcd,
+	0xf4, 0x44, 0xf9, 0x45, 0x4b, 0xd8, 0xcc, 0x08, 0x16, 0xa2, 0x79, 0xa9, 0xf9, 0xb9, 0x00, 0xd5,
+	0xb9, 0x8e, 0x1c, 0xc2, 0xdf, 0x6c, 0xdc, 0x67, 0x4a, 0xb1, 0x48, 0xc8, 0x77, 0x3c, 0xf2, 0x9d,
+	0x83, 0xe2, 0x91, 0x4b, 0x6b, 0x4b, 0xf0, 0x4d, 0x44, 0x1a, 0x00, 0xf9, 0x7e, 0x5c, 0x24, 0x76,
+	0x76, 0x99, 0xae, 0x20, 0x64, 0x17, 0xaa, 0x43, 0xa1, 0x74, 0xc2, 0xc6, 0x68, 0x07, 0xbb, 0x74,
+	0x71, 0x26, 0x37, 0x50, 0x55, 0x18, 0x63, 0xa8, 0x85, 0xf4, 0x4b, 0xf6, 0x52, 0xa7, 0xbf, 0xb7,
+	0xff, 0x25, 0xeb, 0x63, 0xdc, 0xcb, 0xa5, 0x74, 0xd1, 0x84, 0xfc, 0x0f, 0x35, 0x16, 0x8e, 0xb1,
+	0x2b, 0xc5, 0x94, 0x47, 0x28, 0xfd, 0xb2, 0x6d, 0xfa, 0x4f, 0x70, 0xd6, 0xb9, 0x3a, 0x9f, 0x83,
+	0xd6, 0x92, 0x35, 0x1a, 0xb9, 0x00, 0x57, 0xc7, 0xaa, 0x87, 0xa1, 0x44, 0xed, 0x57, 0xac, 0xe6,
+	0x68, 0xe5, 0x22, 0x81, 0x09, 0xd2, 0x8e, 0x15, 0x21, 0x8b, 0x33, 0xef, 0x29, 0xde, 0xa3, 0xc4,
+	0x24, 0x44, 0xba, 0x94, 0x36, 0x7f, 0x38, 0xd9, 0x0b, 0xca, 0x4c, 0x25, 0x57, 0xb0, 0xa5, 0x63,
+	0xd5, 0x41, 0xa9, 0xf9, 0x3d, 0x0f, 0x99, 0xc6, 0x9e, 0x98, 0xc8, 0x10, 0x6d, 0xd4, 0xf5, 0xf6,
+	0x8e, 0xf5, 0xff, 0xf6, 0xb2, 0xf7, 0x84, 0x40, 0x9f, 0x95, 0x91, 0x03, 0x28, 0x9b, 0x94, 0xd0,
+	0x9a, 0x5c, 0x6f, 0xc3, 0x22, 0x3f, 0xa4, 0x59, 0x81, 0xb4, 0xa1, 0x9e, 0x0e, 0x99, 0xc2, 0x8e,
+	0x18, 0xa7, 0x31, 0x6a, 0x8c, 0xac, 0xe3, 0x73, 0x6a, 0xd7, 0x94, 0xe8, 0x23, 0x06, 0x09, 0xa0,
+	0x66, 0x91, 0x2e, 0x26, 0x11, 0x4f, 0x06, 0x36, 0x87, 0x75, 0xc5, 0x5a, 0x9d, 0x6c, 0x43, 0x45,
+	0x22, 0x53, 0x22, 0xb1, 0xe6, 0xba, 0x34, 0x3f, 0x35, 0xbf, 0x38, 0xe0, 0x3d, 0xb6, 0x99, 0xec,
+	0x81, 0xcb, 0x26, 0x7a, 0x28, 0x24, 0xd7, 0x33, 0xbb, 0xb6, 0x4b, 0x97, 0x00, 0xd9, 0x82, 0x32,
+	0x8e, 0x19, 0x8f, 0xed, 0x42, 0x2e, 0xcd, 0x0e, 0xe4, 0x16, 0xbc, 0x54, 0xf2, 0x29, 0xd3, 0xf8,
+	0x16, 0x67, 0x79, 0x26, 0xc5, 0x3f, 0xcc, 0xe4, 0x49, 0x07, 0xd2, 0x84, 0x9a, 0xc4, 0x01, 0x57,
+	0x3a, 0x7f, 0xa8, 0x25, 0x3b, 0x72, 0x0d, 0x3b, 0xbe, 0x00, 0xff, 0x57, 0x91, 0x90, 0x4d, 0xf8,
+	0xeb, 0x2e, 0x19, 0x25, 0xe2, 0x43, 0xe2, 0x6d, 0x90, 0x2a, 0x94, 0xae, 0x45, 0x82, 0x9e, 0x43,
+	0x5c, 0x28, 0xdf, 0xe8, 0x21, 0x4a, 0xaf, 0x60, 0x40, 0xb3, 0xbf, 0x57, 0x3c, 0x0e, 0xc0, 0x5d,
+	0x44, 0x63, 0x84, 0xb9, 0x75, 0xde, 0x86, 0xa1, 0x53, 0x64, 0xd1, 0x2c, 0x53, 0x9e, 0x4b, 0x29,
+	0xa4, 0x57, 0x38, 0xfe, 0x98, 0xf1, 0xad, 0xdb, 0xa4, 0x02, 0x85, 0xeb, 0x33, 0x6f, 0x83, 0x10,
+	0xa8, 0xbf, 0xc2, 0x7b, 0x36, 0x89, 0xb5, 0xba, 0xe0, 0x71, 0x8c, 0x91, 0xe7, 0x90, 0x7d, 0xd8,
+	0x31, 0x23, 0xee, 0x14, 0xca, 0xee, 0x62, 0xc1, 0x8e, 0x44, 0xf3, 0xb7, 0x78, 0x05, 0xb2, 0x0d,
+	0x64, 0x5e, 0xa6, 0x76, 0x2f, 0x94, 0x18, 0x79, 0x45, 0xb2, 0x07, 0xbe, 0xc1, 0x57, 0x96, 0xea,
+	0x0c, 0x59, 0x1c, 0x63, 0x32, 0x40, 0xaf, 0xf4, 0xb2, 0xf6, 0xf5, 0xa1, 0xe1, 0x7c, 0x7b, 0x68,
+	0x38, 0xdf, 0x1f, 0x1a, 0x4e, 0xbf, 0x62, 0xbf, 0xa8, 0xd3, 0x9f, 0x01, 0x00, 0x00, 0xff, 0xff,
+	0x13, 0xec, 0x5f, 0x5a, 0x0a, 0x05, 0x00, 0x00,
+}
+
+func (m *Host) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *Host) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *Host) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.XXX_unrecognized != nil {
+		i -= len(m.XXX_unrecognized)
+		copy(dAtA[i:], m.XXX_unrecognized)
+	}
+	if m.Status != nil {
+		{
+			size, err := m.Status.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintHost(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x1a
+	}
+	if m.Spec != nil {
+		{
+			size, err := m.Spec.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintHost(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x12
+	}
+	if m.Metadata != nil {
+		{
+			size, err := m.Metadata.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintHost(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
 }
 
 func (m *HostSpec) Marshal() (dAtA []byte, err error) {
@@ -316,6 +649,60 @@ func (m *HostSpec) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
+func (m *HostStatus) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *HostStatus) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *HostStatus) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.XXX_unrecognized != nil {
+		i -= len(m.XXX_unrecognized)
+		copy(dAtA[i:], m.XXX_unrecognized)
+	}
+	if len(m.Reason) > 0 {
+		i -= len(m.Reason)
+		copy(dAtA[i:], m.Reason)
+		i = encodeVarintHost(dAtA, i, uint64(len(m.Reason)))
+		i--
+		dAtA[i] = 0x2a
+	}
+	if m.PhasePending != 0 {
+		i = encodeVarintHost(dAtA, i, uint64(m.PhasePending))
+		i--
+		dAtA[i] = 0x20
+	}
+	if m.PhaseCompleted != 0 {
+		i = encodeVarintHost(dAtA, i, uint64(m.PhaseCompleted))
+		i--
+		dAtA[i] = 0x18
+	}
+	if m.State != 0 {
+		i = encodeVarintHost(dAtA, i, uint64(m.State))
+		i--
+		dAtA[i] = 0x10
+	}
+	if m.TlsCertificateSource != 0 {
+		i = encodeVarintHost(dAtA, i, uint64(m.TlsCertificateSource))
+		i--
+		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
+}
+
 func (m *ACMEProviderSpec) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
@@ -387,6 +774,30 @@ func encodeVarintHost(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return base
 }
+func (m *Host) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.Metadata != nil {
+		l = m.Metadata.Size()
+		n += 1 + l + sovHost(uint64(l))
+	}
+	if m.Spec != nil {
+		l = m.Spec.Size()
+		n += 1 + l + sovHost(uint64(l))
+	}
+	if m.Status != nil {
+		l = m.Status.Size()
+		n += 1 + l + sovHost(uint64(l))
+	}
+	if m.XXX_unrecognized != nil {
+		n += len(m.XXX_unrecognized)
+	}
+	return n
+}
+
 func (m *HostSpec) Size() (n int) {
 	if m == nil {
 		return 0
@@ -416,6 +827,34 @@ func (m *HostSpec) Size() (n int) {
 	}
 	if m.TlsSecret != nil {
 		l = m.TlsSecret.Size()
+		n += 1 + l + sovHost(uint64(l))
+	}
+	if m.XXX_unrecognized != nil {
+		n += len(m.XXX_unrecognized)
+	}
+	return n
+}
+
+func (m *HostStatus) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.TlsCertificateSource != 0 {
+		n += 1 + sovHost(uint64(m.TlsCertificateSource))
+	}
+	if m.State != 0 {
+		n += 1 + sovHost(uint64(m.State))
+	}
+	if m.PhaseCompleted != 0 {
+		n += 1 + sovHost(uint64(m.PhaseCompleted))
+	}
+	if m.PhasePending != 0 {
+		n += 1 + sovHost(uint64(m.PhasePending))
+	}
+	l = len(m.Reason)
+	if l > 0 {
 		n += 1 + l + sovHost(uint64(l))
 	}
 	if m.XXX_unrecognized != nil {
@@ -457,6 +896,168 @@ func sovHost(x uint64) (n int) {
 }
 func sozHost(x uint64) (n int) {
 	return sovHost(uint64((x << 1) ^ uint64((int64(x) >> 63))))
+}
+func (m *Host) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowHost
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: Host: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: Host: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Metadata", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowHost
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthHost
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthHost
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Metadata == nil {
+				m.Metadata = &v1.ObjectMeta{}
+			}
+			if err := m.Metadata.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Spec", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowHost
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthHost
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthHost
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Spec == nil {
+				m.Spec = &HostSpec{}
+			}
+			if err := m.Spec.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Status", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowHost
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthHost
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthHost
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Status == nil {
+				m.Status = &HostStatus{}
+			}
+			if err := m.Status.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipHost(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthHost
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthHost
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.XXX_unrecognized = append(m.XXX_unrecognized, dAtA[iNdEx:iNdEx+skippy]...)
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
 }
 func (m *HostSpec) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
@@ -677,6 +1278,168 @@ func (m *HostSpec) Unmarshal(dAtA []byte) error {
 			if err := m.TlsSecret.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipHost(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthHost
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthHost
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.XXX_unrecognized = append(m.XXX_unrecognized, dAtA[iNdEx:iNdEx+skippy]...)
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *HostStatus) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowHost
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: HostStatus: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: HostStatus: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field TlsCertificateSource", wireType)
+			}
+			m.TlsCertificateSource = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowHost
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.TlsCertificateSource |= HostTLSCertificateSource(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field State", wireType)
+			}
+			m.State = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowHost
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.State |= HostState(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 3:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field PhaseCompleted", wireType)
+			}
+			m.PhaseCompleted = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowHost
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.PhaseCompleted |= HostPhase(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 4:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field PhasePending", wireType)
+			}
+			m.PhasePending = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowHost
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.PhasePending |= HostPhase(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 5:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Reason", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowHost
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthHost
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthHost
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Reason = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
