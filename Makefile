@@ -159,38 +159,38 @@ _proto_options/gogofast += Mopencensus/proto/trace/v1/trace_config.proto=istio.i
 _proto_options/gogofast += Mvalidate/validate.proto=github.com/envoyproxy/protoc-gen-validate/validate
 _proto_options/gogofast += $(shell find $(OSS_HOME)/api/envoy -type f -name '*.proto' | sed -E 's,^$(OSS_HOME)/api/((.*)/[^/]*),M\1=github.com/datawire/ambassador/pkg/api/\2,')
 proto_options/gogofast = $(call lazyonce,proto_options/gogofast,$(_proto_options/gogofast))
-$(OSS_HOME)/pkg/api/%.pb.go: $(OSS_HOME)/api/%.proto $(tools/protoc) $(tools/protoc-gen-gogofast) $(OSS_HOME)/vendor
+$(OSS_HOME)/pkg/api/%.pb.go: $(OSS_HOME)/api/%.proto $(tools/protoc) $(tools/protoc-gen-gogofast) | $(OSS_HOME)/vendor
 	$(call protoc,gogofast,$(OSS_HOME)/pkg/api,\
 	    $(tools/protoc-gen-gogofast))
 
 proto_options/validate += lang=gogo
-$(OSS_HOME)/pkg/api/%.pb.validate.go: $(OSS_HOME)/api/%.proto $(tools/protoc) $(tools/protoc-gen-validate) $(OSS_HOME)/vendor
+$(OSS_HOME)/pkg/api/%.pb.validate.go: $(OSS_HOME)/api/%.proto $(tools/protoc) $(tools/protoc-gen-validate) | $(OSS_HOME)/vendor
 	$(call protoc,validate,$(OSS_HOME)/pkg/api,\
 	    $(tools/protoc-gen-validate))
 	sed -E -i.bak 's,"(envoy/.*)"$$,"github.com/datawire/ambassador/pkg/api/\1",' $@
 	rm -f $@.bak
 
 proto_options/go-json +=
-$(OSS_HOME)/pkg/api/%.pb.json.go: $(OSS_HOME)/api/%.proto $(tools/protoc) $(tools/protoc-gen-go-json) $(OSS_HOME)/vendor
+$(OSS_HOME)/pkg/api/%.pb.json.go: $(OSS_HOME)/api/%.proto $(tools/protoc) $(tools/protoc-gen-go-json) | $(OSS_HOME)/vendor
 	$(call protoc,go-json,$(OSS_HOME)/pkg/api,\
 	    $(tools/protoc-gen-go-json))
 	sed -E -i.bak 's,golang/protobuf,gogo/protobuf,g' $@
 	rm -f $@.bak
 
 proto_options/python +=
-$(OSS_HOME)/generate.tmp/%_pb2.py: $(OSS_HOME)/api/%.proto $(tools/protoc) $(OSS_HOME)/vendor
+$(OSS_HOME)/generate.tmp/%_pb2.py: $(OSS_HOME)/api/%.proto $(tools/protoc) | $(OSS_HOME)/vendor
 	mkdir -p $(OSS_HOME)/generate.tmp/getambassador.io
 	mkdir -p $(OSS_HOME)/generate.tmp/getambassador
 	ln -sf ../getambassador.io/ $(OSS_HOME)/generate.tmp/getambassador/io
 	$(call protoc,python,$(OSS_HOME)/generate.tmp)
 
 proto_options/js += import_style=commonjs
-$(OSS_HOME)/generate.tmp/%_pb.js: $(OSS_HOME)/api/%.proto $(tools/protoc) $(OSS_HOME)/vendor
+$(OSS_HOME)/generate.tmp/%_pb.js: $(OSS_HOME)/api/%.proto $(tools/protoc) | $(OSS_HOME)/vendor
 	$(call protoc,js,$(OSS_HOME)/generate.tmp)
 
 proto_options/grpc-web += import_style=commonjs
 proto_options/grpc-web += mode=grpcwebtext
-$(OSS_HOME)/generate.tmp/%_grpc_web_pb.js: $(OSS_HOME)/api/%.proto $(tools/protoc) $(tools/protoc-gen-grpc-web) $(OSS_HOME)/vendor
+$(OSS_HOME)/generate.tmp/%_grpc_web_pb.js: $(OSS_HOME)/api/%.proto $(tools/protoc) $(tools/protoc-gen-grpc-web) | $(OSS_HOME)/vendor
 	$(call protoc,grpc-web,$(OSS_HOME)/generate.tmp,\
 	    $(tools/protoc-gen-grpc-web))
 
