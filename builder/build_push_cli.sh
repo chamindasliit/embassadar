@@ -21,8 +21,7 @@ SRCDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" > /dev/null && pwd )"
 
 set -x
 # Set BUILD_VERSION and RELEASE_VERSION (and other junk)
-expr="$("${SRCDIR}/module_version.sh" unused)"
-eval "$expr"
+source <("${SRCDIR}/module_version.sh" unused; echo "EXIT STATUS $?" >&2)
 
 case "$1" in
     build)
