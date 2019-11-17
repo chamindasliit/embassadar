@@ -19,8 +19,10 @@ set -o errexit
 # Where is this script?
 SRCDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" > /dev/null && pwd )"
 
+set -x
 # Set BUILD_VERSION and RELEASE_VERSION (and other junk)
-source <("${SRCDIR}/module_version.sh" unused)
+expr="$("${SRCDIR}/module_version.sh" unused)"
+eval "$expr"
 
 case "$1" in
     build)

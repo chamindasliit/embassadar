@@ -60,4 +60,6 @@ module_version() {
     echo BUILD_VERSION="\"$(echo "${RELEASE_VERSION}" | sed 's/-rc[0-9]*$//')\""
 }
 
+PS4='@ '
+set -x
 module_version "$@"
