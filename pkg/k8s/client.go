@@ -209,6 +209,16 @@ func NewClient(info *KubeInfo) (*Client, error) {
 	}, nil
 }
 
+// Refresh refreshes the list of discovered resources
+func (c *Client) Refresh() error {
+	resources, err := restmapper.GetAPIGroupResources(c.discoveryClient)
+	if err != nil {
+		return err
+	}
+	c.restMapper = restmapper.NewDiscoveryRESTMapper(resources)
+	return nil
+}
+
 // ResourceType describes a Kubernetes resource type in a particular cluster.
 // See ResolveResourceType() for more information.
 //

@@ -95,6 +95,10 @@ func (w *Watcher) WatchNamespace(namespace, resources string, listener func(*Wat
 	return w.SelectiveWatch(namespace, resources, "", "", listener)
 }
 
+func (w *Watcher) Refresh() error {
+	return w.Client.Refresh()
+}
+
 func (w *Watcher) SelectiveWatch(namespace, resources, fieldSelector, labelSelector string,
 	listener func(*Watcher)) error {
 	return w.WatchQuery(Query{
