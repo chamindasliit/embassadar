@@ -30,7 +30,7 @@ type Aggregator struct {
 	snapshots chan<- string
 	// We won't consider ourselves "bootstrapped" until we hear
 	// about all these kinds.
-	requiredKinds       []string
+	requiredKinds       map[string]bool
 	watchHook           WatchHook
 	limiter             limiter.Limiter
 	ids                 map[string]bool
@@ -41,14 +41,14 @@ type Aggregator struct {
 }
 
 func NewAggregator(snapshots chan<- string, k8sWatches chan<- []KubernetesWatchSpec, consulWatches chan<- []ConsulWatchSpec,
-	requiredKinds []string, watchHook WatchHook, limiter limiter.Limiter) *Aggregator {
+	watchHook WatchHook, limiter limiter.Limiter) *Aggregator {
 	return &Aggregator{
 		KubernetesEvents:    make(chan k8sEvent),
 		ConsulEvents:        make(chan consulEvent),
 		k8sWatches:          k8sWatches,
 		consulWatches:       consulWatches,
 		snapshots:           snapshots,
-		requiredKinds:       requiredKinds,
+		requiredKinds:       make(map[string]bool),
 		watchHook:           watchHook,
 		limiter:             limiter,
 		ids:                 make(map[string]bool),
@@ -72,6 +72,10 @@ func (a *Aggregator) Work(p *supervisor.Process) error {
 			return nil
 		}
 	}
+}
+
+func (a *Aggregator) MarkRequired(key string, required bool) {
+	a.requiredKinds[key] = required
 }
 
 func (a *Aggregator) updateConsulResources(event consulEvent) {
@@ -114,10 +118,12 @@ func (a *Aggregator) isKubernetesBootstrapped(p *supervisor.Process) bool {
 	if !sok {
 		return false
 	}
-	for _, k := range a.requiredKinds {
-		_, ok := submap[k]
-		if !ok {
-			return false
+	for k, v := range a.requiredKinds {
+		if v {
+			_, ok := submap[k]
+			if !ok {
+				return false
+			}
 		}
 	}
 	return true
