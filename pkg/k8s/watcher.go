@@ -250,10 +250,7 @@ func (w *Watcher) StartWithErrorHandler(handler func(kind ResourceType, stage st
 	}
 }
 
-func (w *Watcher) catcher(doSomething func()) error {
-	// Catch panics from the bootstrapper.
-	var err error = nil
-
+func (w *Watcher) catcher(doSomething func()) (err error) {
 	defer func() {
 		if _err := errorutil.PanicToError(recover()); _err != nil {
 			err = _err
@@ -262,7 +259,7 @@ func (w *Watcher) catcher(doSomething func()) error {
 
 	doSomething()
 
-	return err
+	return
 }
 
 func (w *Watcher) sync(kind ResourceType) {
