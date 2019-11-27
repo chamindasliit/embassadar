@@ -6,6 +6,8 @@ import (
 	"sync"
 	"time"
 
+	log "github.com/sirupsen/logrus"
+
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -15,6 +17,8 @@ import (
 	"k8s.io/client-go/dynamic"
 	_ "k8s.io/client-go/plugin/pkg/client/auth"
 	"k8s.io/client-go/tools/cache"
+
+	"github.com/datawire/ambassador/pkg/errorutil"
 )
 
 type listWatchAdapter struct {
@@ -197,6 +201,12 @@ func (w *Watcher) WatchQuery(query Query, listener func(*Watcher)) error {
 
 // Start starts the watcher
 func (w *Watcher) Start() {
+	w.StartWithErrorHandler(nil)
+}
+
+// StartWithErrorHandler starts the watcher, but allows supplying an error handler to call
+// instead of panic()ing on errors.
+func (w *Watcher) StartWithErrorHandler(handler func(kind ResourceType, stage string, err error)) {
 	w.mutex.Lock()
 	if w.started {
 		w.mutex.Unlock()
@@ -205,18 +215,54 @@ func (w *Watcher) Start() {
 		w.started = true
 		w.mutex.Unlock()
 	}
+
 	for kind := range w.watches {
-		w.sync(kind)
+		err := w.catcher(func() { w.sync(kind) })
+
+		if err != nil {
+			if handler != nil {
+				log.Infof("handling sync err %q", err)
+				handler(kind, "sync", err)
+			} else {
+				log.Infof("unhandled sync err %q", err)
+				panic(err)
+			}
+		}
 	}
 
-	for _, watch := range w.watches {
-		watch.invoke()
+	for kind, watch := range w.watches {
+		err := w.catcher(func() { watch.invoke() })
+
+		if err != nil {
+			if handler != nil {
+				log.Infof("handling invoke err %q", err)
+				handler(kind, "invoke", err)
+			} else {
+				log.Infof("unhandled invoke err %q", err)
+				panic(err)
+			}
+		}
 	}
 
 	w.wg.Add(len(w.watches))
 	for _, watch := range w.watches {
 		go watch.runner()
 	}
+}
+
+func (w *Watcher) catcher(doSomething func()) error {
+	// Catch panics from the bootstrapper.
+	var err error = nil
+
+	defer func() {
+		if _err := errorutil.PanicToError(recover()); _err != nil {
+			err = _err
+		}
+	}()
+
+	doSomething()
+
+	return err
 }
 
 func (w *Watcher) sync(kind ResourceType) {
