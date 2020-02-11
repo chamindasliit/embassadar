@@ -915,16 +915,14 @@ class V2Listener(dict):
         # with that.
 
         v2listener_by_port = V2ListenerCollection(config)
+        irlisteners_by_port: Dict[int, List[IRListener]] = {}
 
         # Also, in Edge Stack, the magic extremely-low-precedence / Mapping is always routed,
         # rather than being redirected. If a user doesn't want this behavior, they can override
         # the Mapping.
 
-        first_irlistener_by_port: Dict[int, IRListener] = {}
-
         for irlistener in config.ir.listeners:
-            if irlistener.service_port not in first_irlistener_by_port:
-                first_irlistener_by_port[irlistener.service_port] = irlistener
+            irlisteners_by_port[irlistener.service_port] = irlisteners_by_port.get(irlistener.service_port, []) + [ irlistener ]
 
             logger.debug(f"V2Listeners: working on {irlistener.pretty()}")
             # What port is this?
@@ -946,8 +944,7 @@ class V2Listener(dict):
                 # Make sure we have a v2listener on the right port for this.
                 v2listener = v2listener_by_port[irlistener.insecure_addl_port]
 
-                if irlistener.insecure_addl_port not in first_irlistener_by_port:
-                    first_irlistener_by_port[irlistener.insecure_addl_port] = irlistener
+                irlisteners_by_port[irlistener.insecure_addl_port] = irlisteners_by_port.get(irlistener.insecure_addl_port, []) + [ irlistener ]
 
                 # Do we already have a VHost for this hostname?
                 if vhostname not in v2listener.vhosts:
@@ -986,7 +983,7 @@ class V2Listener(dict):
 
                 # Check for a v2listener on the main service port to see if the proxy proto
                 # is enabled.
-                main_listener = first_irlistener_by_port.get(config.ir.ambassador_module.service_port, None)
+                main_listener = irlisteners_by_port.get(config.ir.ambassador_module.service_port, [None])[None]
                 use_proxy_proto = main_listener.use_proxy_proto if main_listener else False
 
                 # Remember, it is not a bug to have action=None. There is no secure action
