@@ -1073,23 +1073,17 @@ class V2Listener(dict):
                     for secure, route, action in candidates:
                         variant = "secure" if secure else "insecure"
 
-                        if route["match"].get("prefix", None) == "/.well-known/acme-challenge/":
-                            # ACME challenges can never be secure.
-                            if secure:
-                                logger.debug(
-                                    f"V2Listeners: {v2listener.name} {vhostname} secure: force Reject for ACME challenge")
-                                action = "Reject"
-                            else:
-                                # Force the action to "Route" for the insecure side of the world.
-                                logger.debug(
-                                    f"V2Listeners: {v2listener.name} {vhostname} insecure: force Route for ACME challenge")
-                                action = "Route"
+                        if route["match"].get("prefix", None) == "/.well-known/acme-challenge/" and not secure:
+                            # Force the action to "Route" for the insecure side of the world.
+                            logger.debug(
+                                f"V2Listeners: {v2listener.name} {vhostname} insecure: force Route for ACME challenge")
+                            action = "Route"
 
-                                # Force the actual route entry, instead of using the redirect_route, too.
-                                # (Note that right now, the user can't create a Mapping that forces redirection.
-                                # When they can do this per-Mapping, well, really, we can't force them to not
-                                # redirect if they explicitly ask for it, and that'll be OK.)
-                                route = insecure_route
+                            # Force the actual route entry, instead of using the redirect_route, too.
+                            # (Note that right now, the user can't create a Mapping that forces redirection.
+                            # When they can do this per-Mapping, well, really, we can't force them to not
+                            # redirect if they explicitly ask for it, and that'll be OK.)
+                            route = insecure_route
                         elif route_hosts and (vhostname != '*') and (vhostname not in route_hosts):
                             # Drop this because the host is mismatched.
                             logger.debug(
