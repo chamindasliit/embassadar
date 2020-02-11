@@ -915,15 +915,12 @@ class V2Listener(dict):
         # with that.
 
         v2listener_by_port = V2ListenerCollection(config)
-        irlisteners_by_port: Dict[int, List[IRListener]] = {}
 
         # Also, in Edge Stack, the magic extremely-low-precedence / Mapping is always routed,
         # rather than being redirected. If a user doesn't want this behavior, they can override
         # the Mapping.
 
         for irlistener in config.ir.listeners:
-            irlisteners_by_port[irlistener.service_port] = irlisteners_by_port.get(irlistener.service_port, []) + [ irlistener ]
-
             logger.debug(f"V2Listeners: working on {irlistener.pretty()}")
             # What port is this?
             v2listener = v2listener_by_port[irlistener.service_port]
@@ -943,8 +940,6 @@ class V2Listener(dict):
             if irlistener.insecure_addl_port is not None:
                 # Make sure we have a v2listener on the right port for this.
                 v2listener = v2listener_by_port[irlistener.insecure_addl_port]
-
-                irlisteners_by_port[irlistener.insecure_addl_port] = irlisteners_by_port.get(irlistener.insecure_addl_port, []) + [ irlistener ]
 
                 # Do we already have a VHost for this hostname?
                 if vhostname not in v2listener.vhosts:
@@ -969,32 +964,6 @@ class V2Listener(dict):
                 first_vhost = v2listener.first_vhost
                 first_vhost._hostname = '*'
                 first_vhost._name = f"{first_vhost._name}-forced-star"
-
-        if config.ir.edge_stack_allowed:
-            # If we're running Edge Stack, make sure we have a v2listener on port 8080, so that
-            # we have a place to stand for ACME.
-
-            if 8080 not in v2listener_by_port:
-                # Force a v2listener on 8080 with a VHost for '*' that rejects everything. The ACME
-                # hole-puncher will override the reject for ACME, and nothing else will get through.
-
-                logger.info(f"V2Listeners: v2listener_by_port has no 8080, forcing Edge Stack v2listener on 8080")
-                v2listener = v2listener_by_port[8080]
-
-                # Check for a v2listener on the main service port to see if the proxy proto
-                # is enabled.
-                main_listener = irlisteners_by_port.get(config.ir.ambassador_module.service_port, [None])[None]
-                use_proxy_proto = main_listener.use_proxy_proto if main_listener else False
-
-                # Remember, it is not a bug to have action=None. There is no secure action
-                # for this vhost.
-                v2listener.make_vhost(name="forced-8080",
-                                      hostname="*",
-                                      context=None,
-                                      secure=False,
-                                      action=None,
-                                      insecure_action='Reject',
-                                      use_proxy_proto=use_proxy_proto)
 
         # OK. We have all the v2listeners. Time to walk the routes (note that they are already ordered).
         for route in config.routes:
