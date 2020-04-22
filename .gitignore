@@ -1,7 +1,6 @@
 # Created by ./configure
 BUILD
 !/BUILD
-!/python/**/BUILD
 /vendor
 
 # "main"
@@ -13,7 +12,7 @@ node_modules/
 venv/
 
 # Bazel nonsense
-/bazel-*
+bazel-*
 
 # Python nonsense
 *.pyc
