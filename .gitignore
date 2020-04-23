@@ -25,11 +25,13 @@ dist/
 
 # Editor nonsense
 *~
+*.swp
+#*#
+.#*
 .vscode
 .idea
 *.iml
 tags
-*.swp
 
 # Misc nonsense
 *.log
