@@ -191,7 +191,7 @@ spec:
 Global labels are prepended to every single label group. In the above example, if the following global label was added in the `ambassador` Module:
 
 ```
-—--
+---
 apiVersion: getambassador.io/v2
 kind: Module
 metadata:
