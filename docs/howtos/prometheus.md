@@ -14,11 +14,9 @@ Ambassador Edge Stack makes it easy to output Envoy-generated statistics to Prom
 
 Starting with Ambassador `0.71.0`, Prometheus can scrape stats/metrics directly from Envoy's `/metrics` endpoint, removing the need to [configure Ambassador Edge Stack to output stats to StatsD](#statsd-exporter-output-statistics-to-ambassador-edge-stack).
 
-The `/metrics` endpoint can be accessed internally via the Ambassador Edge Stack admin port (default 8877):
-
-```
-http(s)://ambassador:8877/metrics
-```
+The `/metrics` endpoint can be accessed internally via the admin port
+(8877), which is exposed on the `ambassador-admin` service:
+`http://ambassador-admin:8877/metrics`
 
 or externally by creating a `Mapping` similar to below:
 
