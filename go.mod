@@ -38,13 +38,14 @@ go 1.13
 //  3. If you do add a `replace` command to this file, you must also
 //     add it to the go.mod in apro.git (see above for explanation).
 //
-//  4. We use https://github.com/datawire/libk8s to manage the
-//     Kubernetes library versions (since the Kubernetes folks make it
-//     such a nightmare).  See the docs there if you need to fuss with
-//     the versions of any of the k8s.io/ libraries.  If you find
-//     yourself having to do any hacks with k8s.io library versions
-//     (like doing a `replace` for a dozen different k8s.io/
-//     packages), stop, and ask someone for advice.
+//  4. We used to use https://github.com/datawire/libk8s to manage the
+//     Kubernetes library versions (since the Kubernetes folks made it
+//     such a nightmare), but recent versions of Kubernetes 1.y.z now
+//     have useful "v0.y.z" git tags that Go understands, so it's
+//     actually quite reasonable now.  If you find yourself having to
+//     do any hacks with k8s.io library versions (like doing a
+//     `replace` for a dozen different k8s.io/ packages), stop, and
+//     ask someone for advice.
 //
 //  5. Use `make go-mod-tidy` instead of `go mod tidy`.  Normal `go
 //     mod tidy` will try to remove `github.com/cncf/udpa`--don't let
@@ -55,30 +56,44 @@ go 1.13
 
 require (
 	git.lukeshu.com/go/libsystemd v0.5.3
+	github.com/MakeNowJust/heredoc v0.0.0-20171113091838-e9091a26100e // indirect
 	github.com/Masterminds/semver v1.4.2
 	github.com/Masterminds/sprig v2.17.1+incompatible
 	github.com/Masterminds/squirrel v1.4.0 // indirect
 	github.com/aokoli/goutils v1.1.0 // indirect
 	github.com/asaskevich/govalidator v0.0.0-20200428143746-21a406dcc535 // indirect
 	github.com/bmizerany/assert v0.0.0-20160611221934-b7ed37b82869
+	github.com/bugsnag/bugsnag-go v1.5.0 // indirect
+	github.com/bugsnag/panicwrap v1.2.0 // indirect
 	github.com/cncf/udpa v0.0.0-20200324003616-bae28a880fdb // indirect
 	github.com/cncf/udpa/go v0.0.0-20200324003616-bae28a880fdb
 	github.com/containerd/containerd v1.3.4 // indirect
 	github.com/datawire/pf v0.0.0-20180510150411-31a823f9495a
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
+	github.com/docker/go-metrics v0.0.0-20181218153428-b84716841b82 // indirect
+	github.com/docker/libtrust v0.0.0-20160708172513-aabc10ec26b7 // indirect
+	github.com/docker/spdystream v0.0.0-20181023171402-6480d4af844c // indirect
 	github.com/ecodia/golang-awaitility v0.0.0-20180710094957-fb55e59708c7
+	github.com/emicklei/go-restful v2.11.1+incompatible // indirect
 	github.com/envoyproxy/protoc-gen-validate v0.3.0-java.0.20200609174644-bd816e4522c1
 	github.com/fsnotify/fsnotify v1.4.9
+	github.com/garyburd/redigo v1.6.0 // indirect
+	github.com/go-openapi/spec v0.19.4 // indirect
 	github.com/go-openapi/validate v0.19.5
+	github.com/gofrs/uuid v3.2.0+incompatible // indirect
 	github.com/gogo/protobuf v1.3.1
+	github.com/golang/groupcache v0.0.0-20191027212112-611e8accdfc9 // indirect
 	github.com/golang/protobuf v1.4.2
 	github.com/google/go-cmp v0.4.0
 	github.com/google/shlex v0.0.0-20181106134648-c34317bd91bf
 	github.com/google/uuid v1.1.1
 	github.com/gookit/color v1.2.3
+	github.com/gorilla/handlers v1.4.0 // indirect
 	github.com/gorilla/websocket v1.4.1
+	github.com/gregjones/httpcache v0.0.0-20181110185634-c63ab54fda8f // indirect
 	github.com/hashicorp/consul/api v1.3.0
 	github.com/iancoleman/strcase v0.0.0-20180726023541-3605ed457bf7
+	github.com/kardianos/osext v0.0.0-20170510131534-ae77be60afb1 // indirect
 	github.com/kballard/go-shellquote v0.0.0-20180428030007-95032a82bc51
 	github.com/lib/pq v1.7.0 // indirect
 	github.com/lyft/protoc-gen-star v0.4.10
@@ -96,6 +111,8 @@ require (
 	github.com/spf13/pflag v1.0.5
 	github.com/stretchr/testify v1.6.1
 	github.com/xeipuuv/gojsonschema v1.2.0 // indirect
+	github.com/yvasiyarov/go-metrics v0.0.0-20150112132944-c25f46c4b940 // indirect
+	github.com/yvasiyarov/gorelic v0.0.6 // indirect
 	golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9
 	golang.org/x/net v0.0.0-20200520004742-59133d7f0dd7
 	golang.org/x/sys v0.0.0-20200420163511-1957bb5e6d1f
