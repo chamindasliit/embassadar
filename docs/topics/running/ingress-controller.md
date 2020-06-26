@@ -29,12 +29,14 @@ If you're new to the Ambassador Edge Stack and to Kubernetes, we'd recommend you
   You can see this in the [`aes-crds.yaml`](/yaml/aes.yaml)
   file, but this is the critical rule to add to the Ambassador Edge Stack's `Role` or `ClusterRole`:
 
-      - apiGroups: [ "extensions", "networking.k8s.io" ]
-        resources: [ "ingresses", "ingressclasses" ]
-        verbs: ["get", "list", "watch"]
-      - apiGroups: [ "extensions", "networking.k8s.io" ]
-        resources: [ "ingresses/status" ]
-        verbs: ["update"]
+  ```yaml
+  - apiGroups: [ "extensions", "networking.k8s.io" ]
+    resources: [ "ingresses", "ingressclasses" ]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: [ "extensions", "networking.k8s.io" ]
+    resources: [ "ingresses/status" ]
+    verbs: ["update"]
+  ```
 
    **Note:** This is included by default in all recent versions of the Ambassador install YAML
 

@@ -41,12 +41,16 @@ We have included a few example configurations in the [statsd-sink](https://githu
 
 [Graphite](http://graphite.readthedocs.org/) is a web-based realtime graphing system. Spin up an example Graphite setup:
 
-    kubectl apply -f statsd-sink/graphite/graphite-statsd-sink.yaml
+```shell
+kubectl apply -f statsd-sink/graphite/graphite-statsd-sink.yaml
+```
 
 This sets up the `statsd-sink` service and a deployment that contains Graphite and its related infrastructure. Graphite's web interface is available at `http://statsd-sink/` from within the cluster. Use port forwarding to access the interface from your local machine:
 
-    SINKPOD=$(kubectl get pod -l service=statsd-sink -o jsonpath="{.items[0].metadata.name}")
-    kubectl port-forward $SINKPOD 8080:80
+```shell
+SINKPOD=$(kubectl get pod -l service=statsd-sink -o jsonpath="{.items[0].metadata.name}")
+kubectl port-forward $SINKPOD 8080:80
+```
 
 This sets up Graphite access at `http://localhost:8080/`.
 
