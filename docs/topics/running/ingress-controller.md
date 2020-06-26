@@ -38,7 +38,7 @@ If you're new to the Ambassador Edge Stack and to Kubernetes, we'd recommend you
     verbs: ["update"]
   ```
 
-   **Note:** This is included by default in all recent versions of the Ambassador install YAML
+  **Note:** This is included by default in all recent versions of the Ambassador install YAML
 
 - You must create your `Ingress` resource with the correct `ingress.class`.
 
@@ -56,25 +56,25 @@ If you're new to the Ambassador Edge Stack and to Kubernetes, we'd recommend you
   from the Service with the annotation `app.kubernetes.io/component: ambassador-service`.
 
   ```yaml
-      kind: Service
-      apiVersion: v1
-      metadata:
-        name: ingress-ambassador
-        labels:
-          app.kubernetes.io/component: ambassador-service
-      spec:
-        externalTrafficPolicy: Local
-        type: LoadBalancer
-        selector:
-          service: ambassador
-        ports:
-          - name: http
-            port: 80
-            targetPort: http
-          - name: https
-            port: 443
-            targetPort: https
-            ```
+  kind: Service
+  apiVersion: v1
+  metadata:
+    name: ingress-ambassador
+    labels:
+      app.kubernetes.io/component: ambassador-service
+  spec:
+    externalTrafficPolicy: Local
+    type: LoadBalancer
+    selector:
+      service: ambassador
+    ports:
+      - name: http
+        port: 80
+        targetPort: http
+      - name: https
+        port: 443
+        targetPort: https
+  ```
 
 ### When Should I Use an `Ingress` Instead of Annotations or CRDs?
 

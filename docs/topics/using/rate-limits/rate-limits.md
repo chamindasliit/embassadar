@@ -117,7 +117,6 @@ Labels can be grouped. This allows for a single request to count against multipl
 The following `Mapping` resources could be configured:
 
 ```
-
 ---
 apiVersion: getambassador.io/v2
 kind: Mapping

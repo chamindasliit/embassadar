@@ -141,7 +141,7 @@ If you're using Grafana, [Alex Gervais](https://twitter.com/alex_gervais) has wr
 If you are a user of the [Datadog](https://www.datadoghq.com/) monitoring system, pulling in Ambassador Edge Stack statistics is very easy. Replace the sample API key in the YAML file with your own, then launch the DogStatsD agent:
 
 ```
-    kubectl apply -f statsd-sink/datadog/dd-statsd-sink.yaml
+kubectl apply -f statsd-sink/datadog/dd-statsd-sink.yaml
 ```
 
 This sets up the `statsd-sink` service and a deployment of the DogStatsD agent that automatically forwards Ambassador Edge Stack stats to your Datadog account.
