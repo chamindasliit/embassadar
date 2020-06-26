@@ -216,7 +216,7 @@ subjects:
 
 Copy the above YAML into `traffic-agent-rbac.yaml` and, if necessary, edit the two `namespace`s appropriately. Apply it:
 
-```bash
+```console
 $ kubectl apply -f traffic-agent-rbac.yaml
 serviceaccount/traffic-agent created
 clusterrolebinding.rbac.authorization.k8s.io/traffic-agent created
@@ -375,7 +375,7 @@ Key points include:
 If you wish to allow automatic Traffic Agent sidecar injection in any deployment without having to manually configure the extra container, you may install the `ambassador-injector` AdmissionController:
 
 1. Generate a (self-signed) TLS certificate and key to be used by the webhook server. The certificate will be issued for the Common Name (CN) of `ambassador-injector.ambassador.svc`, which is the cluster-internal DNS name for the service. TLS is mandatory when using a `MutatingWebhookConfiguration`. The certificates generated in this example are valid for 365 days:
-    ```shell script
+    ```shell
     # Generate the CA cert and private key
     openssl req -days 365 -nodes -new -x509 -keyout ca.key -out ca.crt \
       -subj "/CN=Ambassador Edge Stack Admission Controller Webhook CA"

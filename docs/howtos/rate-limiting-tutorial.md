@@ -163,12 +163,13 @@ Ambassador Edge Stack would also perform multiple requests to `example-rate-limi
 If we `curl` to a rate-limited URL:
 
 ```shell
-$ curl -Lv -H "x-ambassador-test-allow: probably" $AMBASSADORURL/backend/
+curl -Lv -H "x-ambassador-test-allow: probably" $AMBASSADORURL/backend/
 ```
 
 We get a 429, since we are limited.
 
-```shell
+```console
+$ curl -Lv -H "x-ambassador-test-allow: probably" $AMBASSADORURL/backend/
 HTTP/1.1 429 Too Many Requests
 content-type: text/html; charset=utf-8
 content-length: 0
@@ -176,9 +177,8 @@ content-length: 0
 
 If we set the correct header value to the service request, we will get a quote successfully:
 
-```shell
+```console
 $ curl -Lv -H "x-ambassador-test-allow: true" $AMBASSADORURL/backend/
-
 TCP_NODELAY set
 * Connected to 35.196.173.175 (35.196.173.175) port 80 (#0)
 > GET /backed HTTP/1.1

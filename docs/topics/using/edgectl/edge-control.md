@@ -12,7 +12,7 @@ Edge Control is available as a downloadable executable for both Mac OS X and Lin
 
 For MacOS:
 
-```bash
+```shell
 curl -fLO https://metriton.datawire.io/downloads/darwin/edgectl
 chmod a+x edgectl
 xattr -d com.apple.quarantine edgectl # Give OS X permission to run the executable
@@ -21,7 +21,7 @@ mv edgectl ~/bin  # Somewhere in your PATH
 
 For Linux:
 
-```bash
+```shell
 curl -fLO https://metriton.datawire.io/downloads/linux/edgectl
 chmod a+x edgectl
 mv edgectl ~/bin  # Somewhere in your PATH
@@ -31,7 +31,7 @@ mv edgectl ~/bin  # Somewhere in your PATH
 
 Make sure you've terminated the daemon.
 
-```bash
+```console
 $ edgectl quit
 Edge Control Daemon quitting...
 ```
@@ -46,7 +46,7 @@ There are three basic commands that are used for Service Preview:
 
 1. Launch the edgectl daemon:
 
-```bash
+```console
 $ sudo edgectl daemon
 Launching Edge Control Daemon v1.3.2 (api v1)
 ```
@@ -93,14 +93,14 @@ The daemon’s logging output may be found in `/tmp/edgectl.log`.
 
 Launch Daemon:
 
-```bash
+```console
 $ sudo edgectl daemon
 Launching Edge Control Daemon v1.0.0-ea5 (api v1)
 ```
 
 If `/etc/resolv.conf` is correct, but you have a local DNS server available on 10.0.0.1 that should be used for non-cluster queries, you could run Configure fallback server:
 
-```bash
+```console
 $ sudo edgectl daemon --fallback 10.0.0.1
 Launching Edge Control Daemon v1.0.0-ea5 (api v1)
 ```
@@ -190,7 +190,7 @@ Connected
 
 1. Starting with an empty cluster, add the simple microservice from the [Introduction to Service Preview and Edge Control](../../edgectl#traffic-agent).
 
-```bash
+```console
 $ kubectl get svc,deploy
 NAME                 TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)   AGE
 service/kubernetes   ClusterIP   10.43.0.1    <none>        443/TCP   27s
@@ -210,7 +210,7 @@ deployment.extensions/hello   0/1     1            0           7s
 
 2. Use Edge Control to set up outbound connectivity to your cluster.
 
-```bash
+```console
 $ edgectl status
 Not connected
 
@@ -236,7 +236,7 @@ You are now able to connect to services directly from your laptop, as demonstrat
 
 3. When you’re done working with this cluster, disconnect.
 
-```bash
+```console
 $ edgectl disconnect
 Disconnected
 
@@ -248,7 +248,7 @@ Not connected
 
 1. Install the traffic manager in your cluster and the traffic agent in the simple microservice as described in the [Introduction to Service Preview and Edge Control](../../edgectl#configuring-service-preview)..
 
-```bash
+```console
 $ kubectl apply -f traffic-manager.yaml
 service/telepresence-proxy created
 deployment.apps/telepresence-proxy created
@@ -260,7 +260,7 @@ deployment.apps/hello configured
 
 2. Launch a local service on your laptop. If you were debugging the hello service, you might run a local copy in your debugger. In this example, we will start an arbitrary service on port 9000.
 
-```bash
+```console
 $ # using Python
 
 $ python3 -m http.server 9000
@@ -281,7 +281,7 @@ Hit CTRL-C to stop the server
 
 3. Connect to the cluster to set up outbound connectivity and check that you can access the hello service in the cluster with `curl`.
 
-```bash
+```console
 $ edgectl connect
 Connecting...
 Connected to context default (https://localhost:6443)
@@ -299,7 +299,7 @@ Hello, world!
 
 4. Set up an intercept. In this example, we’ll capture requests that have the x-dev header set to $USER.
 
-```bash
+```console
 $ edgectl intercept avail
 Found 1 interceptable deployment(s):
     1. hello
@@ -340,7 +340,7 @@ As you can see, the second request, which includes the specified x-dev header, i
 
 5. Next, remove the intercept to restore normal operation.
 
-```bash
+```console
 $ edgectl intercept remove example
 Removed intercept "example"
 
@@ -417,7 +417,7 @@ As you can see, the second request, which uses the preview URL, is served by the
 
 7. Next, remove the intercept to restore normal operation.
 
-```bash
+```console
 $ edgectl intercept remove example-url
 Removed intercept "example-url"
 
