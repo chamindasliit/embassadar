@@ -32,7 +32,7 @@ The look and feel of the Dev Portal can be fully customized for your particular 
 
 The default Dev Portal styles are hosted in [GitHub](https://github.com/datawire/devportal-content.git). To use your own styling, clone or copy the repository, and update the `DEVPORTAL_CONTENT_URL` environment variable to point to the repository. If you wish to use a private GitHub repository, create a [personal access token](https://help.github.com/en/articles/creating-a-personal-access-token-for-the-command-line) and include the PAT in the `DEVPORTAL_CONTENT_URL` variable following the example below:
 
-```
+```text
 https://9cb034008ddfs819da268d9z13b7ecd26@github.com/datawire/private-devportal-repo
 ```
 
@@ -40,7 +40,7 @@ https://9cb034008ddfs819da268d9z13b7ecd26@github.com/datawire/private-devportal-
 
 Check out a local copy of your content repo (see `DEVPORTAL_CONTENT_URL` above) and from within run the following docker image:
 
-```
+```shell
 docker run -it --rm --volume $PWD:/content --publish 8877:8877 docker.io/datawire/ambassador_pro:local-devportal-$aproVersion$
 ```
 

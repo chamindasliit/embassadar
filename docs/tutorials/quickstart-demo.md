@@ -69,7 +69,7 @@ In a typical configuration workflow, Custom Resource Definitions (CRDs) are used
 
 You should see something similar to the following:
 
-  ```
+  ```console
   (⎈ |rdl-1:default)$ curl -Lk https://aes.ri.k36.net/backend/
   {
    "server": "idle-cranberry-8tbb6iks",
@@ -86,7 +86,7 @@ In the Ambassador Edge Stack, Kubernetes serves as the single source of configur
 
 2. Type `kubectl get hosts` to see the `Host` resource that was created:
 
-   ```
+   ```console
    (⎈ |rdl-1:default)$ kubectl get hosts
    NAME                          HOSTNAME                      STATE   PHASE COMPLETED   PHASE PENDING   AGE
    blackbird-123.edgestack.me    blackbird-123.edgestack.me    Ready                                     158m

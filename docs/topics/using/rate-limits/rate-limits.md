@@ -26,7 +26,7 @@ Edge Stack supports both global and service-level rate limits via two different 
 
 The following `Mapping` resource will add the `{"generic_key": "default_generic_key_label"}` to every request to the `foo-app` service:
 
-```
+```yaml
 ---
 apiVersion: getambassador.io/v2
 kind: Mapping
@@ -43,7 +43,7 @@ spec:
 
 You can then create a default rate limit on every request that matches this label:
 
-```
+```yaml
 ---
 apiVersion: getambassador.io/v2
 kind: RateLimit
@@ -116,7 +116,7 @@ Labels can be grouped. This allows for a single request to count against multipl
 
 The following `Mapping` resources could be configured:
 
-```
+```yaml
 ---
 apiVersion: getambassador.io/v2
 kind: Mapping
@@ -149,7 +149,7 @@ spec:
 
 Now requests to the `foo-app` and the `bar-app` would be labeled with {{"generic_key": "foo-app"},{"remote_address", 10.10.11.12}} and {{"generic_key": "bar-app"},{"remote_address", 10.10.11.12}}, respectively. Rate limits on these two services could be created as such:
 
-```
+```yaml
 ---
 apiVersion: getambassador.io/v2
 kind: RateLimit
@@ -189,7 +189,7 @@ spec:
 
 Global labels are prepended to every single label group. In the above example, if the following global label was added in the `ambassador` Module:
 
-```
+```yaml
 ---
 apiVersion: getambassador.io/v2
 kind: Module

@@ -58,7 +58,7 @@ Ambassador resources. See [using defaults](../../using/defaults) for more inform
 
 `circuit_breakers` sets the global circuit breaking configuration that Ambassador will use for all mappings, unless overridden in a mapping. More information at the [circuit breaking reference](../../using/circuit-breakers).
 
-```
+```yaml
 circuit_breakers
   max_connections: 2048
   ...
@@ -66,7 +66,7 @@ circuit_breakers
 
 `cors` sets the default CORS configuration for all mappings in the cluster. See the [CORS syntax](../../using/cors).
 
-```
+```yaml
 cors:
   origins: http://foo.example,http://bar.example
   methods: POST, GET, OPTIONS
@@ -81,14 +81,14 @@ cors:
 
 By default, both services are enabled:
 
-```
+```yaml
 diagnostics:
   enabled: true
 ```
 
 Setting `diagnostics.enabled` to `false` will disable the routes for both services (they will remain accessible from inside the Ambassador pod on port 8877):
 
-```
+```yaml
 diagnostics:
   enabled: false
 ```
@@ -99,7 +99,7 @@ Ambassador will use for all mappings unless overridden in a
 mapping. No default value is provided by Ambassador.
 More information at https://www.envoyproxy.io/docs/envoy/latest/api-v2/api/v2/core/address.proto#envoy-api-msg-core-tcpkeepalive
 
-```
+```yaml
 keepalive:
   time: 2
   interval: 2
@@ -107,27 +107,27 @@ keepalive:
 ```
 
 `liveness_probe` defaults on, but you can disable the API route. It will remain accessible on diag_port.
-```
+```yaml
 liveness_probe:
       enabled: true
 ```
 
 `load_balancer` sets the global load balancing type and policy that Ambassador will use for all mappings unless overridden in a mapping. Defaults to round-robin with Kubernetes. More information at the [load balancer reference](../load-balancer).
 
-```
+```yaml
 load_balancer:
   policy: round_robin/least_request/ring_hash/maglev
   ...
 ```
 
 `readiness_probe` defaults on, but you can disable the API route. It will remain accessible on diag_port.
-```
+```yaml
 readiness_probe:
   enabled: true
 ```
 
 `retry_policy` lets you add resilience to your services in case of request failures by performing automatic retries.
-```
+```yaml
 retry_policy:
   retry_on: "5xx"
   ...

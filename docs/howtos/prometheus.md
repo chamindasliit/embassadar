@@ -52,7 +52,7 @@ In this section, we will deploy the Prometheus Operator using the standard YAML 
 
    To deploy the Prometheus Operator, you can clone the repository and follow the instructions in the README, or simply apply the published YAML with `kubectl`.
 
-    ```
+    ```shell
     kubectl apply -f https://raw.githubusercontent.com/coreos/prometheus-operator/master/bundle.yaml
     ```
 
@@ -60,7 +60,7 @@ In this section, we will deploy the Prometheus Operator using the standard YAML 
 
     First, create RBAC resources for your Prometheus instance
 
-    ```
+    ```shell
     kubectl apply -f https://www.getambassador.io/yaml/monitoring/prometheus-rbac.yaml
     ```
 
@@ -99,7 +99,7 @@ In this section, we will deploy the Prometheus Operator using the standard YAML 
           memory: 400Mi
     ```
 
-    ```
+    ```shell
     kubectl apply -f prometheus.yaml
     ```
 
@@ -141,7 +141,7 @@ This section will focus on setting up Prometheus to scrape stats from Ambassador
 
 1. Install the Prometheus Operator from the helm chart
 
-    ```
+    ```shell
     helm install -n prometheus stable/prometheus-operator
     ```
 
@@ -322,7 +322,7 @@ The example dashboard you installed above displays 'top line' statistics about t
 
 To view the full set of stats available to Prometheus you can access the Prometheus UI by running:
 
-```
+```shell
 kubectl port-forward -n monitoring service/prometheus 9090
 ```
 
@@ -342,7 +342,7 @@ If running a pre-`0.71.0` version of Ambassador, you will need to configure Envo
 
 1. Deploy the StatsD Exporter in the `default` namespace
 
-    ```
+    ```shell
     kubectl apply -f https://www.getambassador.io/yaml/monitoring/statsd-sink.yaml
     ```
 

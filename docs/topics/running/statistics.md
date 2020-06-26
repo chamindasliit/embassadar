@@ -115,14 +115,14 @@ Make sure that the `ServiceMonitor` is in the same namespace as Ambassador Edge 
 
 Ensure `STATSD_ENABLED` is set to `"true"` and apply the YAML with `kubectl`.
 
-```
+```shell
 kubectl apply -f statsd-sink.yaml
 kubectl apply -f prometheus.yaml
 ```
 
 Wait for a minute after the pods spin up and then access the Prometheus dashboard by port-forwarding the Prometheus pod and going to `http://localhost:9090/` on a web-browser.
 
-```
+```shell
 kubectl port-forward prometheus-prometheus-0 9090
 ```
 
@@ -140,7 +140,7 @@ If you're using Grafana, [Alex Gervais](https://twitter.com/alex_gervais) has wr
 
 If you are a user of the [Datadog](https://www.datadoghq.com/) monitoring system, pulling in Ambassador Edge Stack statistics is very easy. Replace the sample API key in the YAML file with your own, then launch the DogStatsD agent:
 
-```
+```shell
 kubectl apply -f statsd-sink/datadog/dd-statsd-sink.yaml
 ```
 
