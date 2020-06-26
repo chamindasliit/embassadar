@@ -35,7 +35,7 @@ First, check to see if the Edge Policy Console is reachable. If it is successful
 3. Check that the “desired” number of Pods equals the “current” and “available” number of Pods. If they are **not** equal, check the status of the associated Pods with the following command: `kubectl get pods -n ambassador`.
 4. Use the following command for details about the history of the Deployment: `kubectl describe -n ambassador deployment ambassador`
 
-    * Look for data in the “Replicas” field near the top of the output. For example: 
+    * Look for data in the “Replicas” field near the top of the output. For example:
 
       ```console
       Replicas: 3 desired | 3 updated | 3 total | 3 available | 0 unavailable
